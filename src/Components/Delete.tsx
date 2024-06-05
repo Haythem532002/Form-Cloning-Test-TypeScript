@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import Box from "./Box";
 import Title from "./Title";
 import { CgDanger } from "react-icons/cg";
@@ -8,6 +8,14 @@ import Button from "./Button";
 const Delete = () => {
   const [reason, setReason] = useState<string>("");
   const [comment, setComment] = useState<string>("");
+  const handleSubmit = (e: FormEvent) => {
+    if (reason === "") {
+      e.preventDefault();
+      alert("You must choose a reason");
+    } else {
+      alert("Thank you for your Help");
+    }
+  };
   return (
     <Box>
       <Title text="Delete Your Account" />
@@ -50,30 +58,22 @@ const Delete = () => {
           text="Others"
         />
       </div>
-      <div className="mt-6 mb-5">
-        <p className="mb-3">Let us know if you've other comments</p>
-        <textarea
-          className="px-3 py-2 rounded-lg w-full border-2 focus:outline-none"
-          rows={7}
-          placeholder="Your Comments(Optional)"
-          value={comment}
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-            setComment(e.target.value)
-          }
-        ></textarea>
-        <p className="flex justify-end text-[#AAAAAA]">Max 2000 characters</p>
-      </div>
-      <Button
-        text="Submit"
-        onClick={(e: React.MouseEvent<HTMLElement>) => {
-          if (reason === "") {
-            alert("Please Select One Reason");
-            e.preventDefault();
-          } else {
-            alert("Thank you for your help");
-          }
-        }}
-      />
+      <form onSubmit={handleSubmit}>
+        <div className="mt-6 mb-5">
+          <p className="mb-3">Let us know if you've other comments</p>
+          <textarea
+            className="px-3 py-2 rounded-lg w-full border-2 focus:outline-none"
+            rows={7}
+            placeholder="Your Comments(Optional)"
+            value={comment}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              setComment(e.target.value)
+            }
+          ></textarea>
+          <p className="flex justify-end text-[#AAAAAA]">Max 2000 characters</p>
+        </div>
+        <Button text="Submit" />
+      </form>
     </Box>
   );
 };

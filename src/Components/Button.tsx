@@ -1,17 +1,13 @@
-import React, { MouseEventHandler } from "react";
+import React from "react";
 
-interface buttonInterface {
-  text: string;
-  onClick: MouseEventHandler;
-}
-
-export default function Button({ text, onClick }: buttonInterface) {
+const Button = ({ text }: { text: string }) => {
   return (
     <button
-      onClick={onClick}
       className="text-white w-full text-center rounded-md py-3 bg-primary"
+      type="submit"
     >
       {text}
     </button>
   );
-}
+};
+export default Button;

@@ -4,11 +4,35 @@ import Title from "./Title";
 import { CgDanger } from "react-icons/cg";
 import { FaCheck } from "react-icons/fa";
 import Button from "./Button";
+import { z } from "zod";
+
+const UserSchema = z.object({
+  email: z.string().email("Invalid Email Format"),
+  password: z.string().min(6, "Password must be at least 6 characters").trim(),
+  experience: z.number().default(0),
+});
+
+type User = z.infer<typeof UserSchema>;
 
 const Create = () => {
-  const [mail, setMail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [experience, setExperinece] = useState<string>("");
+  const [formData, setFormData] = useState<User>({
+    email: "",
+    password: "",
+    experience: 0,
+  });
+  const [errors, setErros] = useState<z.ZodIssue[]>([]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = UserSchema.safeParse(formData);
+    if (result.success) {
+      alert("Form Submitted Succesfully");
+      setErros([]);
+    } else {
+      console.log("Validation errors:" + result.error.errors);
+      setErros(result.error.errors);
+    }
+  };
   const [remember, setRemeber] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
   return (
@@ -17,24 +41,30 @@ const Create = () => {
       <p className="w-full text-center mb-5">
         Create your account in a second to receive our latest news!
       </p>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div>
           <div>
-            <label className="font-bold" htmlFor="mail">
+            <label className="font-bold" htmlFor="email">
               Email
             </label>
           </div>
-          <div className="border-2 rounded-lg w-full mt-2 mb-5">
+          <div className="border-2 rounded-lg w-full mt-2 mb-2">
             <input
               className="pl-3 py-2 w-full rounded-lg focus:outline-none"
-              name="mail"
-              type="email"
+              id="email"
+              type="text"
               placeholder="Email"
-              value={mail}
+              value={formData.email}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setMail(e.currentTarget.value)
+                setFormData((prevState) => ({
+                  ...prevState,
+                  email: e.target.value,
+                }))
               }
             />
+          </div>
+          <div className="text-[#ff0000] mb-2">
+            {errors.find((error) => error.path.includes("email"))?.message}
           </div>
         </div>
         <div>
@@ -47,15 +77,20 @@ const Create = () => {
           <div className="relative rounded-lg w-full mt-2 mb-2">
             <input
               className={`border-2 pl-3 py-2 w-full rounded-lg border-[${
-                password.length < 6 && password.length > 0 ? "#ff0000" : ""
+                formData.password.length < 6 && formData.password.length > 0
+                  ? "#ff0000"
+                  : ""
               }] focus:outline-none`}
-              name="password"
+              id="password"
               type="password"
               placeholder="Password"
-              value={password}
+              value={formData.password}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 const newPassword = e.target.value;
-                setPassword(newPassword);
+                setFormData((prevState) => ({
+                  ...prevState,
+                  password: newPassword,
+                }));
                 if (newPassword.length >= 6) {
                   setVisible(false);
                 } else {
@@ -63,7 +98,7 @@ const Create = () => {
                 }
               }}
               onFocus={(): void => {
-                if (password.length < 6) {
+                if (formData.password.length < 6) {
                   setVisible(true);
                 }
               }}
@@ -86,6 +121,9 @@ const Create = () => {
               </p>
             </div>
           )}
+          <div className="text-[#ff0000] mb-2">
+            {errors.find((error) => error.path.includes("password"))?.message}
+          </div>
         </div>
         <div>
           <div>
@@ -98,18 +136,20 @@ const Create = () => {
               className="px-3 py-2 w-full rounded-lg"
               name="select"
               id="experience"
-              value={experience}
+              value={formData.experience}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                setExperinece(e.target.value)
+                setFormData((prevState) => ({
+                  ...prevState,
+                  experience: Number(e.target.value),
+                }))
               }
             >
-              <option value="">Please Select</option>
               <option value="0">0</option>
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
               <option value="4">4</option>
-              <option value="+5">+5</option>
+              <option value="5">5</option>
             </select>
           </div>
         </div>
@@ -127,17 +167,7 @@ const Create = () => {
           </button>
           <label>Remember Me</label>
         </div>
-        <Button
-          text="Create Account"
-          onClick={(e: React.MouseEvent<HTMLElement>) => {
-            if (mail !== "" && password.length >= 6 && experience !== "") {
-              alert("Account Created Succefully");
-            } else {
-              e.preventDefault();
-              alert("Please Provide all the necessary fields");
-            }
-          }}
-        />
+        <Button text="Create Account" />
       </form>
     </Box>
   );

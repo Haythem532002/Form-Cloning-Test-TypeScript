@@ -6,7 +6,7 @@ interface itemInterface {
   checked: boolean;
 }
 
-export default function Item({ text, onClick, checked }: itemInterface) {
+const Item = ({ text, onClick, checked }: itemInterface) => {
   const backgroundColor = checked === true ? "primary" : "none";
   return (
     <div className="flex items-center my-2">
@@ -17,4 +17,6 @@ export default function Item({ text, onClick, checked }: itemInterface) {
       <p className="ml-2">{text}</p>
     </div>
   );
-}
+};
+
+export default Item;
